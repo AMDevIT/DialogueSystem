@@ -1,0 +1,66 @@
+﻿{
+  "id": "testConversation",
+  "defaultRootNodeId": "startNode",
+  "initConversationScriptId":  "testConversationInitScript",
+  "defaultOnSelected": "testConversationOnSelected",
+  "defaultCanShow": "testConversationCanShow",
+  "comment":  "Demo (and test) conversation",
+  "nodes": [
+    {
+      "id": "startNode",
+      "characterId": "main_character",
+      "textId": "text_start_node",
+      "choices": [
+        {
+          "id": "sn_c1",
+          "textId": "text_sn_c2",
+          "canShow": "testConversationCanShow",
+          "onSelected": "testConversationOnSelected"
+        },
+        {
+          "id": "sn_c2",
+          "textId": "text_sn_c2",
+          "navigateTo": "node_004"
+        }
+      ]
+    },
+    {
+      "id": "node_002",
+      "characterId": "companion1",
+      "textId": "text_node_002",
+      "comment":  "An empty choices array will be translated to a default ok."
+    },
+    {
+      "id": "node_003",
+      "characterId": "main_character",
+      "textId": "text_node_003",
+      "choices": [
+        {
+          "id": "sn_node_003_end_choice",
+          "comment": "A choice without onSelected field will drop to the default OnSelected delegate. Also, a choice without canShow field will drop to default CanShow delegate."
+        }
+      ]
+    },
+    {
+      "id": "node_004",
+      "characterId": "companion2",
+      "textId": "text_node_004",
+      "choices": [
+        {
+          "id": "cnv_choice_default_ok",
+          "comment": "You can force the default ok behaviour using the reserved key cnv_choice_default_ok"            
+        }
+      ]
+    },
+    {
+      "id": "node_005",
+      "textId": "text_node_005",
+      "choices": [
+        {
+          "id": "sn_node_004_c1",
+          "textId": "text_n002_c1"          
+        }
+      ]
+    }
+  ]
+}
