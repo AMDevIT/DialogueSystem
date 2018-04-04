@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AmDevIT.Games.DialogueSystem.Serialization
 {
-    public static class SerializationExtensionMethods
+    internal static class SerializationExtensionMethods
     {
         #region Methods
 
-        public static Conversation AsConversation(this ConversationJsonData source)
+        internal static Conversation AsConversation(this ConversationJsonData source)
         {
             throw new NotImplementedException();
         }

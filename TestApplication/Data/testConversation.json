@@ -13,7 +13,7 @@
       "choices": [
         {
           "id": "sn_c1",
-          "textId": "text_sn_c2",
+          "textId": "text_sn_c1",
           "canShow": "testConversationCanShow",
           "onSelected": "testConversationOnSelected"
         },

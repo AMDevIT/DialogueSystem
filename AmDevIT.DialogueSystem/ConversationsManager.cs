@@ -1,6 +1,8 @@
-﻿using AmDevIT.Games.DialogueSystem.Serialization;
+﻿using AmDevIT.Games.DialogueSystem.Localization;
+using AmDevIT.Games.DialogueSystem.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ namespace AmDevIT.Games.DialogueSystem
         private readonly Dictionary<string, Conversation> conversationsDictionary = new Dictionary<string, Conversation>();
 
         private Conversation runningConversation = null;
+        private readonly ConversationsLocalizationManager conversationsLocalizationManager = new ConversationsLocalizationManager();
 
         #endregion
 
@@ -32,6 +35,14 @@ namespace AmDevIT.Games.DialogueSystem
         {
             get;
             set;
+        }
+
+        public ConversationsLocalizationManager LocalizationManager
+        {
+            get
+            {
+                return this.conversationsLocalizationManager;
+            }
         }
 
         public Conversation RunningConversation
@@ -90,12 +101,12 @@ namespace AmDevIT.Games.DialogueSystem
 
         public void RegisterDelegate(string id, DialogueSystemCallback callback)
         {
-            this.RegisterDelegate(id, callback);
+            this.RegisterDelegateInternal(id, callback);
         }
 
         public void RegisterDelegate(string id, DialogueSystemCanExecuteDelegate canExecuteCallback)
         {
-            this.RegisterDelegate(id, canExecuteCallback);
+            this.RegisterDelegateInternal(id, canExecuteCallback);
         }
 
         public string GetString(string key)
@@ -149,7 +160,7 @@ namespace AmDevIT.Games.DialogueSystem
 
         }
         
-        protected void RegisterDelegate(string id, Delegate value)
+        protected void RegisterDelegateInternal(string id, Delegate value)
         {
             if (String.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id));
@@ -181,7 +192,33 @@ namespace AmDevIT.Games.DialogueSystem
         {
 
         }
-        
+
+        #region Test Methods
+
+#if DEBUG
+
+        // This section will be removed later in favor of unit tests.
+        // Now the code simple doesn't have enought stability to create a suite of tests.
+
+        public void TestParseConversation(string json)
+        {
+            ConversationJsonData conversationJsonData = null;
+            Conversation conversation = null;
+
+            if (string.IsNullOrEmpty(json))
+                throw new ArgumentNullException("Conversation json");
+
+            conversationJsonData = this.JsonConverter.Deserialize<ConversationJsonData>(json);
+            if (conversationJsonData != null)
+                conversation = conversationJsonData.AsConversation();
+
+            Debugger.Break();
+        }
+
+#endif 
+
+        #endregion
+
         #endregion
     }
 }

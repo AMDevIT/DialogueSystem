@@ -22,14 +22,14 @@ namespace TestApplication.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class TestConversationLocalizedStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal TestConversationLocalizedStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace TestApplication.Localization {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TestApplication.Localization.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TestApplication.Localization.TestConversationLocalizedStrings", typeof(TestConversationLocalizedStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,42 @@ namespace TestApplication.Localization {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a Hello.
+        /// </summary>
+        internal static string cnv_txt_hello {
+            get {
+                return ResourceManager.GetString("cnv_txt_hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a I&apos;m searching for a place to rest..
+        /// </summary>
+        internal static string text_sn_c1 {
+            get {
+                return ResourceManager.GetString("text_sn_c1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a I&apos;m searching for a weapon merchant..
+        /// </summary>
+        internal static string text_sn_c2 {
+            get {
+                return ResourceManager.GetString("text_sn_c2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a Hello wanderer!.
+        /// </summary>
+        internal static string text_start_node {
+            get {
+                return ResourceManager.GetString("text_start_node", resourceCulture);
             }
         }
     }
