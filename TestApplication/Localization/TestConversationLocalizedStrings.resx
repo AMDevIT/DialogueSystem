@@ -127,6 +127,6 @@
     <value>I'm searching for a weapon merchant.</value>
   </data>
   <data name="text_start_node" xml:space="preserve">
-    <value>Hello wanderer!</value>
+    <value>Now, we must think about the next move.</value>
   </data>
 </root>

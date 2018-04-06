@@ -88,7 +88,7 @@ namespace AmDevIT.Games.DialogueSystem
 
             conversationJsonData = this.JsonConverter.Deserialize<ConversationJsonData>(json);
             if (conversationJsonData != null)            
-                conversation = conversationJsonData.AsConversation();
+                conversation = conversationJsonData.AsConversation(this);
 
             if (conversation != null)
             {
@@ -183,12 +183,12 @@ namespace AmDevIT.Games.DialogueSystem
                 throw new ArgumentNullException(nameof(id));
         }     
 
-        protected virtual bool DefaultCanShow(object status)
+        protected virtual bool DefaultCanShow(ConversationsManager manager, object status)
         {
             return true;
         }
 
-        protected virtual void DefaultOnChoiceSelected(object status)
+        protected virtual void DefaultOnChoiceSelected(ConversationsManager manager, object status)
         {
 
         }
@@ -210,7 +210,7 @@ namespace AmDevIT.Games.DialogueSystem
 
             conversationJsonData = this.JsonConverter.Deserialize<ConversationJsonData>(json);
             if (conversationJsonData != null)
-                conversation = conversationJsonData.AsConversation();
+                conversation = conversationJsonData.AsConversation(this);
 
             Debugger.Break();
         }

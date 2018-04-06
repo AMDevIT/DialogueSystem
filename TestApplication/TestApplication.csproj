@@ -59,6 +59,7 @@
     </ApplicationDefinition>
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Dialogues\Localization\ConversationsLocalesImporter.cs" />
+    <Compile Include="Dialogues\MainConversationHandler.cs" />
     <Compile Include="Localization\TestConversationLocalizedStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -104,7 +105,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Data\testConversation.json" />
+    <Content Include="Assets\testConversation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -121,7 +124,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Data\" />
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\FlareFemaleHero1.png" />
+    <Resource Include="Assets\Images\FlareMaleHero1.png" />
+    <Resource Include="Assets\Images\FlareMaleHero2.png" />
+    <Resource Include="Assets\Images\FlareMaleHero3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\landscape.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

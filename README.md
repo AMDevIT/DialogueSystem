@@ -15,3 +15,13 @@ This will allow "forward-only" conversations models to be easily implemented.
 
 Also, the goal is to obtain platform-agnostic behaviours, using interfaces to describe operations like JSON parsing or localized strings.
 
+## Credits
+
+Assets found mostly on https://opengameart.org/
+
+Portraits in the test application:
+
+* http://justinnichol.blogspot.it
+* https://www.kickstarter.com/projects/1318318905/creative-commons-fantasy-portrait-marathon
+
+

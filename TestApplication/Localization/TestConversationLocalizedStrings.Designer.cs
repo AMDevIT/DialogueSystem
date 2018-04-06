@@ -88,7 +88,7 @@ namespace TestApplication.Localization {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a Hello wanderer!.
+        ///   Cerca una stringa localizzata simile a Now, we must think about the next move..
         /// </summary>
         internal static string text_start_node {
             get {
