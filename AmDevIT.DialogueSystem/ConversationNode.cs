@@ -16,6 +16,12 @@ namespace AmDevIT.Games.DialogueSystem
 
         #region Properties
 
+        public Conversation Parent
+        {
+            get;
+            protected set;
+        }
+
         public string ID
         {
             get;
@@ -32,6 +38,33 @@ namespace AmDevIT.Games.DialogueSystem
         {
             get;
             protected set;
+        }
+
+        #endregion
+
+        #region .ctor
+
+        internal ConversationNode(Conversation parent, string id, string characterID, string textID)
+        {
+            if (parent == null)
+                throw new ArgumentNullException("Parent cannot be null.");
+
+            if (String.IsNullOrEmpty(id))
+                throw new ArgumentNullException("Conversation node ID cannot be null");
+            
+            this.Parent = parent;
+            this.ID = id;
+            this.CharacterID = characterID;
+            this.TextID = textID;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void UpdateTextID(string textID)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

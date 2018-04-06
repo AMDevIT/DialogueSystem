@@ -80,26 +80,33 @@ namespace AmDevIT.Games.DialogueSystem
 
         #region .ctor
 
+        internal Conversation(ConversationsManager manager,
+                          string id,
+                          string defaultRootNodeID,
+                          string initConversationScriptID,
+                          string defaultOnSelectedID,
+                          string defaultCanShowID)
+            : this(manager, id, defaultRootNodeID, 
+                   initConversationScriptID, defaultOnSelectedID, 
+                   defaultCanShowID, null)
+        {
+
+        }
+
         internal Conversation(ConversationsManager manager, 
                               string id, 
                               string defaultRootNodeID,
                               string initConversationScriptID,
                               string defaultOnSelectedID,
                               string defaultCanShowID, 
-                              KeyValuePair<string, ConversationNode>[] conversationNodes)
+                              ConversationNode[] conversationNodes)
         {
             if (manager == null)
                 throw new ArgumentNullException(nameof(manager));
 
             if (String.IsNullOrEmpty(defaultRootNodeID))
-                throw new ArgumentNullException(nameof(defaultRootNodeID));
-
-            if (conversationNodes == null)
-                throw new ArgumentNullException(nameof(conversationNodes));
-
-            if (conversationNodes.Length == 0)
-                throw new ArgumentException(nameof(conversationNodes)); 
-
+                throw new ArgumentNullException(nameof(defaultRootNodeID));            
+            
             this.Manager = manager;
             this.ID = id;
             this.defaultRootNodeID = defaultRootNodeID;
@@ -107,13 +114,27 @@ namespace AmDevIT.Games.DialogueSystem
             this.DefaultOnSelectedID = defaultOnSelectedID;
             this.DefaultCanShowID = defaultCanShowID;
 
-            foreach (KeyValuePair<string, ConversationNode> currentNode in conversationNodes)
-                this.conversationNodesDictionary.Add(currentNode.Key, currentNode.Value);
+            this.AddConversationNodes(conversationNodes);
         }
 
         #endregion
 
         #region Methods      
+
+        internal void AddConversationNode(ConversationNode node)
+        {
+            if (node != null)            
+                this.conversationNodesDictionary.Add(node.ID, node);            
+        }
+
+        internal void AddConversationNodes(ConversationNode[] nodes)
+        {
+            if (nodes != null && nodes.Length > 0)
+            {
+                foreach (ConversationNode currentNode in nodes)
+                    this.conversationNodesDictionary.Add(currentNode.ID, currentNode);
+            }
+        }
 
         #endregion
     }

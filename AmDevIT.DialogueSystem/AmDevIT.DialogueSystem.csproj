@@ -43,12 +43,15 @@
   <ItemGroup>
     <Compile Include="Conversation.cs" />
     <Compile Include="ConversationChoice.cs" />
+    <Compile Include="ConversationHandlerBase.cs" />
     <Compile Include="ConversationNode.cs" />
     <Compile Include="ConversationsManager.cs" />
     <Compile Include="GlobalDelegates.cs" />
     <Compile Include="Localization\ConversationLocale.cs" />
     <Compile Include="Localization\ConversationsLocalizationManager.cs" />
     <Compile Include="Localization\IConversationsLocalesImporter.cs" />
+    <Compile Include="Reflection\DialogDelegateAttribute.cs" />
+    <Compile Include="Reflection\DialogDelegatesTypes.cs" />
     <Compile Include="Serialization\ConversationChoiceJsonData.cs" />
     <Compile Include="Serialization\ConversationJsonData.cs" />
     <Compile Include="Serialization\ConversationNodeJsonData.cs" />

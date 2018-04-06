@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Resources;
 using TestApplication.Common;
 using TestApplication.Dialogues;
 using TestApplication.Dialogues.Localization;
@@ -18,7 +19,7 @@ namespace TestApplication.ViewModels
 
         #region Consts
 
-        private const string DefaultTestConversationDataPath = "Assets\\testCoversation.json";
+        private const string DefaultTestConversationDataPath = "Assets/testConversation.json";
 
         #endregion
 
@@ -126,27 +127,36 @@ namespace TestApplication.ViewModels
 
         private void InitializeConversation(object parameter)
         {
+            Uri conversationJsonUri = new Uri("pack://application:,,,/" + DefaultTestConversationDataPath);
+            StreamResourceInfo streamResourceInfo = null;
             StreamReader streamReader = null;
-            string testJson = null;
+            KeyValuePair<string, Delegate>[] delegates = null;            
+            string testJson = null;           
+
+            
 
             if (this.isConversationInitializable)
             {
                 this.mainConversationHandler = new MainConversationHandler();
+                delegates = this.mainConversationHandler.GetMethodsDelegates();
+
                 this.conversationsLocalesImporter = new ConversationsLocalesImporter();
                 this.conversationsLocalesImporter.RefreshStrings();
                 this.dialogueJsonConverter = new DialogueSystemJsonConverter();
 
                 this.conversationsManager = new ConversationsManager(this.dialogueJsonConverter);
                 this.conversationsManager.LocalizationManager.ImportLocales(this.conversationsLocalesImporter);
+                this.conversationsManager.RegisterDelegates(delegates);
 
-                if (File.Exists(DefaultTestConversationDataPath))
+                streamResourceInfo = App.GetResourceStream(conversationJsonUri);
+                if (streamResourceInfo != null)
                 {
-                    streamReader = File.OpenText(DefaultTestConversationDataPath);
-                    testJson = streamReader.ReadToEnd();
+                    using (streamReader = new StreamReader(streamResourceInfo.Stream))
+                    {
+                        testJson = streamReader.ReadToEnd();
+                    }
                 }
-
-                this.conversationsManager.TestParseConversation(testJson);
-                
+                this.conversationsManager.TestParseConversation(testJson);                
                 this.isConversationInitializable = false;
                 this.InitializeConversationCommand.RaiseCanExecuteChanged();
             }

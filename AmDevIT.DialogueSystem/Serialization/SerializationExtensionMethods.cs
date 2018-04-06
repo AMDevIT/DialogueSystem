@@ -19,37 +19,33 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
         internal static Conversation AsConversation(this ConversationJsonData source, ConversationsManager manager)
         {
             Conversation currentConversation = null;
-            List<KeyValuePair<string, ConversationNode>> nodesList = null;
-
-            nodesList = new List<KeyValuePair<string, ConversationNode>>();
-
-            foreach(ConversationNodeJsonData currentNodeData in source.Nodes)
-            {
-                ConversationNode currentConversationNode = null;
-                KeyValuePair<string, ConversationNode> valuePair = default(KeyValuePair<string, ConversationNode>);
-
-                currentConversationNode = currentNodeData.AsConversationNode();
-                valuePair = new KeyValuePair<string, ConversationNode>(currentConversationNode.ID, 
-                                                                       currentConversationNode);
-                nodesList.Add(valuePair);
-            }
-
+            List<ConversationNode> nodesList = null;
+            
             currentConversation = new Conversation(manager, 
                                                    source.ID, 
                                                    source.DefaultRootNodeID,
                                                    source.InitConversationScriptId,
                                                    source.DefaultOnSelected,
-                                                   source.DefaultCanShow,
-                                                   nodesList.ToArray());
+                                                   source.DefaultCanShow);
+
+            nodesList = new List<ConversationNode>();
+
+            foreach (ConversationNodeJsonData currentNodeData in source.Nodes)
+            {
+                ConversationNode currentConversationNode = null;
+
+                currentConversationNode = currentNodeData.AsConversationNode(currentConversation);
+                nodesList.Add(currentConversationNode);
+            }
+            currentConversation.AddConversationNodes(nodesList.ToArray());
             return currentConversation;
         }
 
-        internal static ConversationNode AsConversationNode(this ConversationNodeJsonData source)
+        internal static ConversationNode AsConversationNode(this ConversationNodeJsonData source, Conversation parent)
         {
             ConversationNode conversationNode = null;
 
-            conversationNode = new ConversationNode();
-
+            conversationNode = new ConversationNode(parent, source.ID, source.CharacterID, source.TextID);
             return conversationNode;
         }
 

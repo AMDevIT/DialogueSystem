@@ -71,7 +71,7 @@ namespace AmDevIT.Games.DialogueSystem
             // Register default callback delegates.
 
             this.RegisterDelegate(DefaultCanShowDelegateID, new DialogueSystemCanExecuteDelegate(this.DefaultCanShow));
-            this.RegisterDelegate(DefaultOnChoiceSelectedID, new DialogueSystemCallback(this.DefaultOnChoiceSelected));
+            this.RegisterDelegate(DefaultOnChoiceSelectedID, new DialogueSystemCallbackDelegate(this.DefaultOnChoiceSelected));
         }
 
         #endregion
@@ -99,7 +99,7 @@ namespace AmDevIT.Games.DialogueSystem
             }
         }
 
-        public void RegisterDelegate(string id, DialogueSystemCallback callback)
+        public void RegisterDelegate(string id, DialogueSystemCallbackDelegate callback)
         {
             this.RegisterDelegateInternal(id, callback);
         }
@@ -107,6 +107,15 @@ namespace AmDevIT.Games.DialogueSystem
         public void RegisterDelegate(string id, DialogueSystemCanExecuteDelegate canExecuteCallback)
         {
             this.RegisterDelegateInternal(id, canExecuteCallback);
+        }
+
+        public void RegisterDelegates(KeyValuePair<string, Delegate>[] delegates)
+        {
+            if (delegates == null)
+                throw new ArgumentNullException(nameof(delegates));
+
+            foreach(KeyValuePair<string, Delegate> currentDelegate in delegates)            
+                this.RegisterDelegateInternal(currentDelegate.Key, currentDelegate.Value);            
         }
 
         public string GetString(string key)
