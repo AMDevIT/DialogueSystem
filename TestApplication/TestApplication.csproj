@@ -65,6 +65,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TestConversationLocalizedStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Character.cs" />
+    <Compile Include="Models\Genders.cs" />
+    <Compile Include="UI\BooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\ManWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,10 +124,7 @@
       <Name>AmDevIT.DialogueSystem</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Assets\Images\FlareFemaleHero1.png" />
     <Resource Include="Assets\Images\FlareMaleHero1.png" />

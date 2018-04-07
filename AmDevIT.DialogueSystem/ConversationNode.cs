@@ -14,13 +14,9 @@ namespace AmDevIT.Games.DialogueSystem
 
         #endregion
 
-        #region Properties
-
-        public Conversation Parent
-        {
-            get;
-            protected set;
-        }
+        #region Properties        
+        
+        #region IDs
 
         public string ID
         {
@@ -42,6 +38,31 @@ namespace AmDevIT.Games.DialogueSystem
 
         #endregion
 
+        public Conversation ParentConversation
+        {
+            get;
+            protected set;
+        }
+
+        public ConversationChoice[] Choices
+        {
+            get
+            {
+                if (this.choices.Count > 0)
+                    return this.choices.Values.ToArray();
+                else
+                    return new ConversationChoice[] { };
+            }
+        }
+
+        public string Text
+        {
+            get;
+            protected set;
+        }
+
+        #endregion
+
         #region .ctor
 
         internal ConversationNode(Conversation parent, string id, string characterID, string textID)
@@ -52,19 +73,22 @@ namespace AmDevIT.Games.DialogueSystem
             if (String.IsNullOrEmpty(id))
                 throw new ArgumentNullException("Conversation node ID cannot be null");
             
-            this.Parent = parent;
+            this.ParentConversation = parent;
             this.ID = id;
             this.CharacterID = characterID;
             this.TextID = textID;
+
+            if (this.ParentConversation.ParentConversationManager != null)
+                this.Text = this.ParentConversation.ParentConversationManager.GetLocalizedString(this.TextID);
         }
 
         #endregion
 
         #region Methods
 
-        public void UpdateTextID(string textID)
+        public void UpdateText(string text)
         {
-            throw new NotImplementedException();
+            this.Text = text;
         }
 
         #endregion

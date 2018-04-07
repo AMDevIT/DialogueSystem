@@ -3,18 +3,22 @@ using AmDevIT.Games.DialogueSystem.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AmDevIT.Games.DialogueSystem
 {
     public class ConversationsManager
-    {
+    {        
         #region Consts
 
         protected const string DefaultCanShowDelegateID = "conversation_default_canShow";
         protected const string DefaultOnChoiceSelectedID = "conversation_default_onChoiceSelected";
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler ConversationStarted;
+        public event EventHandler ConversationEnded;      
 
         #endregion
 
@@ -99,6 +103,39 @@ namespace AmDevIT.Games.DialogueSystem
             }
         }
 
+        public bool ContainsConversation(string id)
+        {            
+            return this.conversationsDictionary.ContainsKey(id);
+        }
+
+        public void StartConversation(string id)
+        {
+            DialogueSystemCallbackDelegate callbackDelegate = null;
+            if (String.IsNullOrEmpty(id))
+                throw new ArgumentNullException("Conversation ID cannot be null");
+
+            // Here we start.
+            if (this.conversationsDictionary.ContainsKey(id) == false)
+                throw new ArgumentException("No conversation with ID " + id + " found in the manager.");
+
+            this.RunningConversation = this.conversationsDictionary[id];
+
+            this.OnConversationStarted();
+                        
+            if (!String.IsNullOrEmpty(this.RunningConversation.OnStartConversationID))
+            {
+                callbackDelegate = this.GetMethodDelegate(this.RunningConversation.OnStartConversationID) as DialogueSystemCallbackDelegate;
+                callbackDelegate?.Invoke(this, null);
+            }
+        }
+
+        public void FetchNode(string id)
+        {
+
+        }
+
+        #region Delegates management
+
         public void RegisterDelegate(string id, DialogueSystemCallbackDelegate callback)
         {
             this.RegisterDelegateInternal(id, callback);
@@ -118,13 +155,17 @@ namespace AmDevIT.Games.DialogueSystem
                 this.RegisterDelegateInternal(currentDelegate.Key, currentDelegate.Value);            
         }
 
-        public string GetString(string key)
+        #endregion
+
+        #region Variables management
+
+        public string GetStringValue(string key)
         {
             string result = this.GetValue(key) as String;
             return result;
         }
 
-        public long GetNumber(string key)
+        public long GetNumberValue(string key)
         {
             long result = 0;
 
@@ -164,6 +205,35 @@ namespace AmDevIT.Games.DialogueSystem
                 this.variablesDictionary.Add(key, value);
         }
 
+        #endregion
+
+        #region LocalizationManagement
+
+        public string GetLocalizedString(string key)
+        {
+            string value = key;
+
+            if (this.conversationsLocalizationManager.Count > 0)
+                value = this.conversationsLocalizationManager.GetString(key);
+            return value;
+        }
+
+        #endregion
+
+        #region Conversation
+
+        #endregion
+
+        #region Internal methods
+
+        protected Delegate GetMethodDelegate(string id)
+        {
+            Delegate method = null;
+            if (this.delegatesDictionary.Count > 0 && this.delegatesDictionary.ContainsKey(id))
+                method = this.delegatesDictionary[id];
+            return method;
+        }
+         
         protected void ExecuteConversationNode(string nodeID)
         {
 
@@ -192,15 +262,55 @@ namespace AmDevIT.Games.DialogueSystem
                 throw new ArgumentNullException(nameof(id));
         }     
 
-        protected virtual bool DefaultCanShow(ConversationsManager manager, object status)
+        protected virtual bool DefaultCanShow(ConversationsManager manager, object state)
         {
-            return true;
+            DialogueSystemCanExecuteDelegate canExecuteDelegate = null;
+            bool result = true;
+
+            if (manager.RunningConversation != null && !String.IsNullOrEmpty(manager.RunningConversation.DefaultCanShowID))
+            {
+                canExecuteDelegate = this.GetMethodDelegate(manager.RunningConversation.DefaultCanShowID) as DialogueSystemCanExecuteDelegate;
+                if (canExecuteDelegate != null)
+                    result = canExecuteDelegate.Invoke(manager, state);
+            }
+            return result;
         }
 
-        protected virtual void DefaultOnChoiceSelected(ConversationsManager manager, object status)
+        protected virtual void DefaultOnChoiceSelected(ConversationsManager manager, object state)
         {
+            DialogueSystemCallbackDelegate callbackDelegate = null;
+            bool handled = false;
+            string choiceID = null;
 
+            if (manager.RunningConversation != null && !String.IsNullOrEmpty(manager.runningConversation.DefaultOnSelectedID))
+            {
+                callbackDelegate = this.GetMethodDelegate(manager.RunningConversation.DefaultOnSelectedID) as DialogueSystemCallbackDelegate;
+                if (callbackDelegate != null)
+                {
+                    handled = true;
+                    callbackDelegate.Invoke(manager, state);
+                }
+            }
+
+            if (!handled && manager.RunningConversation != null && manager.RunningConversation.CurrentNode != null)
+            {
+#warning Add the choice code.
+            }
         }
+
+        protected void OnConversationStarted()
+        {
+            // Event args must be added.
+            this.ConversationStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void OnConversationEnded()
+        {
+            // Event args must be added.
+            this.ConversationEnded?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
 
         #region Test Methods
 

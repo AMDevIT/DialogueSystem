@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AmDevIT.Games.DialogueSystem.Localization
@@ -14,10 +16,40 @@ namespace AmDevIT.Games.DialogueSystem.Localization
         #region Fields
 
         private readonly Dictionary<string, Dictionary<string, string>> installedLocalesDictionary = new Dictionary<string, Dictionary<string, string>>();
+        private CultureInfo currentLocale = null;
+
+        #endregion
+
+        #region Properties
+
+        public CultureInfo CurrentLocale
+        {
+            get
+            {
+                return this.currentLocale;
+            }
+            set
+            {
+                this.currentLocale = value;         // Maybe it's worth a check?
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                return this.installedLocalesDictionary.Count;
+            }
+        }
 
         #endregion
 
         #region .ctor
+
+        public ConversationsLocalizationManager()
+        {
+            this.CurrentLocale = CultureInfo.CurrentCulture;
+        }
 
         #endregion
 
@@ -70,6 +102,41 @@ namespace AmDevIT.Games.DialogueSystem.Localization
                 foreach(ConversationLocale currentLocale in importedLocales)                
                     this.AddLocale(currentLocale.Locale, currentLocale.LocalizedStrings);                
             }
+        }
+
+        public string GetString(string id)
+        {
+            string locale = null;
+
+            if (this.installedLocalesDictionary.Count > 0)
+            {
+                if (this.installedLocalesDictionary.ContainsKey(this.CurrentLocale.Name))
+                    locale = this.CurrentLocale.Name;
+
+                if (String.IsNullOrEmpty(locale))
+                {
+                    if (this.CurrentLocale.Parent != null && 
+                        this.installedLocalesDictionary.ContainsKey(this.CurrentLocale.Parent.Name))
+                        locale = this.CurrentLocale.Parent.Name;
+                }
+
+                if (String.IsNullOrEmpty(locale))
+                {
+                    try
+                    {
+                        locale = this.installedLocalesDictionary.Keys.First();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+
+            if (!String.IsNullOrEmpty(locale))
+                return this.GetString(locale, id);
+            else
+                return null;
         }
 
         public string GetString(string locale, string id)

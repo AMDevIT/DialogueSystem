@@ -5,11 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Resources;
 using TestApplication.Common;
 using TestApplication.Dialogues;
 using TestApplication.Dialogues.Localization;
 using TestApplication.Dialogues.Serialization;
+using TestApplication.Models;
 
 namespace TestApplication.ViewModels
 {
@@ -25,6 +28,7 @@ namespace TestApplication.ViewModels
 
         #region Fields
 
+        private readonly Dictionary<string, Character> charactersDictionary = new Dictionary<string, Character>();
         private MainConversationHandler mainConversationHandler = null;
         private ConversationsManager conversationsManager = null;
         private DialogueSystemJsonConverter dialogueJsonConverter = null;
@@ -32,6 +36,10 @@ namespace TestApplication.ViewModels
         private bool isConversationInitializable = true;
         private bool isConversationStarted = false;
         private bool showDialogueUI = false;
+
+        private string characterName = null;
+        private string currentDialogueText = null;
+        private ImageSource currentCharacterPortrait = null;
 
         #endregion
 
@@ -46,7 +54,7 @@ namespace TestApplication.ViewModels
             private set
             {
                 if (this.SetProperty(ref this.isConversationStarted, value))                
-                    this.StartTestConversationCommand.RaiseCanExecuteChanged();                
+                    this.StartConversationCommand.RaiseCanExecuteChanged();                
             }
         }
 
@@ -62,13 +70,49 @@ namespace TestApplication.ViewModels
             }
         }
 
+        public string CharacterName
+        {
+            get
+            {
+                return this.characterName;
+            }
+            private set
+            {
+                this.SetProperty(ref this.characterName, value);
+            }
+        }
+
+        public string CurrentDialogueText
+        {
+            get
+            {
+                return this.currentDialogueText;
+            }
+            private set
+            {
+                this.SetProperty(ref this.currentDialogueText, value);
+            }
+        }
+
+        public ImageSource CurrentCharacterPortrait
+        {
+            get
+            {
+                return this.currentCharacterPortrait;
+            }
+            private set
+            {
+                this.SetProperty(ref this.currentCharacterPortrait, value);
+            }
+        }
+
         #endregion
 
         #region Commands
 
         private DelegateCommand initializeConversationCommand = null;
         private DelegateCommand testSerializationCommand = null;
-        private DelegateCommand startTestConversationCommand = null;
+        private DelegateCommand startConversationCommand = null;
         private DelegateCommand exitApplicationCommand = null;
 
         public DelegateCommand ExitApplicationCommand
@@ -101,13 +145,13 @@ namespace TestApplication.ViewModels
             }
         }
 
-        public DelegateCommand StartTestConversationCommand
+        public DelegateCommand StartConversationCommand
         {
             get
             {
-                if (this.startTestConversationCommand == null)
-                    this.startTestConversationCommand = new DelegateCommand(this.StartTestConversation, this.CanStartTestConversation);
-                return this.startTestConversationCommand;
+                if (this.startConversationCommand == null)
+                    this.startConversationCommand = new DelegateCommand(this.StartConversation, this.CanStartTestConversation);
+                return this.startConversationCommand;
             }            
         }
 
@@ -127,17 +171,42 @@ namespace TestApplication.ViewModels
 
         private void InitializeConversation(object parameter)
         {
+            Character currentCharacter = null;
             Uri conversationJsonUri = new Uri("pack://application:,,,/" + DefaultTestConversationDataPath);
             StreamResourceInfo streamResourceInfo = null;
             StreamReader streamReader = null;
             KeyValuePair<string, Delegate>[] delegates = null;            
-            string testJson = null;           
-
-            
+            string conversationJSon = null;                       
 
             if (this.isConversationInitializable)
             {
+                if (this.charactersDictionary.Count > 0)
+                    this.charactersDictionary.Clear();
+
+                currentCharacter = new Character();
+                currentCharacter.ID = "main_character";
+                currentCharacter.Name = "Marcus";
+                currentCharacter.Surname = "Lionhearth";
+                currentCharacter.Gender = Genders.Male;
+                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
+
+                currentCharacter = new Character();
+                currentCharacter.ID = "companion1";
+                currentCharacter.Name = "Lorraine";
+                currentCharacter.Surname = "Rose";
+                currentCharacter.Gender = Genders.Female;
+                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
+
+                currentCharacter = new Character();
+                currentCharacter.ID = "companion2";
+                currentCharacter.Name = "Slash";
+                currentCharacter.Gender = Genders.Male;
+                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
+
                 this.mainConversationHandler = new MainConversationHandler();
+                this.mainConversationHandler.StartConversationEnded += MainConversationHandler_StartConversationEnded;
+                this.mainConversationHandler.DidEnterNode += MainConversationHandler_DidEnterNode;
+                this.mainConversationHandler.DidExitNode += MainConversationHandler_DidExitNode;
                 delegates = this.mainConversationHandler.GetMethodsDelegates();
 
                 this.conversationsLocalesImporter = new ConversationsLocalesImporter();
@@ -145,6 +214,8 @@ namespace TestApplication.ViewModels
                 this.dialogueJsonConverter = new DialogueSystemJsonConverter();
 
                 this.conversationsManager = new ConversationsManager(this.dialogueJsonConverter);
+                this.conversationsManager.ConversationStarted += ConversationsManager_ConversationStarted;
+                this.conversationsManager.ConversationEnded += ConversationsManager_ConversationEnded;
                 this.conversationsManager.LocalizationManager.ImportLocales(this.conversationsLocalesImporter);
                 this.conversationsManager.RegisterDelegates(delegates);
 
@@ -153,12 +224,14 @@ namespace TestApplication.ViewModels
                 {
                     using (streamReader = new StreamReader(streamResourceInfo.Stream))
                     {
-                        testJson = streamReader.ReadToEnd();
+                        conversationJSon = streamReader.ReadToEnd();
                     }
                 }
-                this.conversationsManager.TestParseConversation(testJson);                
+                this.conversationsManager.ParseConversation(conversationJSon);
                 this.isConversationInitializable = false;
                 this.InitializeConversationCommand.RaiseCanExecuteChanged();
+
+                MessageBox.Show("Conversation data initialized. Ready to start.");
             }
         }
 
@@ -172,9 +245,65 @@ namespace TestApplication.ViewModels
             return !this.isConversationStarted;
         }
 
-        private void StartTestConversation(object parameter)
+        private void StartConversation(object parameter)
         {
+            string conversationName = parameter as string;
 
+            if (String.IsNullOrEmpty(conversationName))
+            {
+                // Show error.
+            }
+
+            if (this.conversationsManager.ContainsConversation(conversationName))
+                this.conversationsManager.StartConversation(conversationName);
+            else
+            {
+                // Show error.
+            }
+        }
+
+        #endregion
+
+        #region Event Handlers
+        private void ConversationsManager_ConversationStarted(object sender, EventArgs e)
+        {
+            this.IsConversationStarted = true;
+        }
+
+        private void ConversationsManager_ConversationEnded(object sender, EventArgs e)
+        {
+            this.IsConversationStarted = false;
+        }
+
+        private void MainConversationHandler_StartConversationEnded(object sender, EventArgs e)
+        {
+            this.IsConversationStarted = true;
+        }
+
+        private void MainConversationHandler_DidEnterNode(object sender, EventArgs e)
+        {
+            Character currentCharacter = null;
+            string text = null;
+            string characterID = null;
+            string characterName = null;
+
+            if (this.conversationsManager.RunningConversation.CurrentNode != null)
+            {
+                text = this.conversationsManager.RunningConversation.CurrentNode.Text;
+                characterID = this.conversationsManager.RunningConversation.CurrentNode.CharacterID;
+                if (this.charactersDictionary.ContainsKey(characterID))
+                    currentCharacter = this.charactersDictionary[characterID];
+                if (currentCharacter != null)
+                    characterName = currentCharacter.FullName;
+
+                this.CharacterName = characterName;
+                this.CurrentDialogueText = text;
+            }
+        }
+
+
+        private void MainConversationHandler_DidExitNode(object sender, EventArgs e)
+        {
         }
 
         #endregion

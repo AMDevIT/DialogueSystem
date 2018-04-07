@@ -12,6 +12,8 @@ namespace AmDevIT.Games.DialogueSystem
 
         private readonly Dictionary<string, ConversationNode> conversationNodesDictionary = new Dictionary<string, ConversationNode>();
 
+        private ConversationNode currentNode = null;
+
         protected string defaultRootNodeID = null;
         protected string textID = null;
         protected string text = null;
@@ -20,11 +22,13 @@ namespace AmDevIT.Games.DialogueSystem
 
         #region Properties
 
-        protected ConversationsManager Manager
+        public ConversationsManager ParentConversationManager
         {
             get;
-            set;
+            protected set;
         }
+
+        #region Objects IDs
 
         public string ID
         {
@@ -44,21 +48,21 @@ namespace AmDevIT.Games.DialogueSystem
         {
             get;
             protected set;
-        }
+        }        
 
-        public string CurrentSpeechText
+        public string OnStartConversationID
         {
-            get
-            {
-                return this.text;
-            }
-            protected set
-            {
-                this.text = value;
-            }
+            get;
+            set;
         }
 
-        public string InitConversationScriptID
+        public string DidEnterNodeID
+        {
+            get;
+            set;
+        }
+
+        public string DidExitNodeID
         {
             get;
             set;
@@ -78,16 +82,49 @@ namespace AmDevIT.Games.DialogueSystem
 
         #endregion
 
+        public string CurrentSpeechText
+        {
+            get
+            {
+                return this.text;
+            }
+            protected set
+            {
+                this.text = value;
+            }
+        }
+
+        public ConversationNode CurrentNode
+        {
+            get
+            {
+                return this.currentNode;
+            }
+            protected set
+            {
+                this.currentNode = value;
+            }
+        }
+
+        #endregion
+
         #region .ctor
 
         internal Conversation(ConversationsManager manager,
                           string id,
                           string defaultRootNodeID,
-                          string initConversationScriptID,
+                          string onStartConversationID,
+                          string didEnterNodeID,
+                          string didExitNodeID,
                           string defaultOnSelectedID,
                           string defaultCanShowID)
-            : this(manager, id, defaultRootNodeID, 
-                   initConversationScriptID, defaultOnSelectedID, 
+            : this(manager, 
+                   id, 
+                   defaultRootNodeID, 
+                   onStartConversationID, 
+                   didEnterNodeID,
+                   didExitNodeID,
+                   defaultOnSelectedID, 
                    defaultCanShowID, null)
         {
 
@@ -96,7 +133,9 @@ namespace AmDevIT.Games.DialogueSystem
         internal Conversation(ConversationsManager manager, 
                               string id, 
                               string defaultRootNodeID,
-                              string initConversationScriptID,
+                              string onStartConversationID,
+                              string didEnterNodeID,
+                              string didExitNodeID,
                               string defaultOnSelectedID,
                               string defaultCanShowID, 
                               ConversationNode[] conversationNodes)
@@ -107,10 +146,12 @@ namespace AmDevIT.Games.DialogueSystem
             if (String.IsNullOrEmpty(defaultRootNodeID))
                 throw new ArgumentNullException(nameof(defaultRootNodeID));            
             
-            this.Manager = manager;
+            this.ParentConversationManager = manager;
             this.ID = id;
             this.defaultRootNodeID = defaultRootNodeID;
-            this.InitConversationScriptID = initConversationScriptID;
+            this.OnStartConversationID = onStartConversationID;
+            this.DidEnterNodeID = didEnterNodeID;
+            this.DidExitNodeID = didExitNodeID;
             this.DefaultOnSelectedID = defaultOnSelectedID;
             this.DefaultCanShowID = defaultCanShowID;
 

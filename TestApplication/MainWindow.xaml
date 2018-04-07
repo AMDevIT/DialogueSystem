@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TestApplication"
+        xmlns:localUI ="clr-namespace:TestApplication.UI"
         xmlns:ViewModels="clr-namespace:TestApplication.ViewModels" 
         x:Class="TestApplication.MainWindow"    
         mc:Ignorable="d"
@@ -13,6 +14,9 @@
     <Window.DataContext>
         <ViewModels:ManWindowViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <localUI:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -25,7 +29,7 @@
             </MenuItem>
             <MenuItem Header="_Test conversation API">
                 <MenuItem Header="_Init conversation manager" Command="{Binding InitializeConversationCommand}"/>
-                <MenuItem Header="_Start test conversation" />
+                <MenuItem Header="_Start test conversation (FOREST)" Command="{Binding StartConversationCommand}" CommandParameter="forestConversation" />
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
@@ -36,7 +40,8 @@
                 <RowDefinition Height="1.2*"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Border Grid.Row="1" Margin="10" BorderThickness="1" BorderBrush="DarkGray">
+            <Border Grid.Row="1" Margin="10" BorderThickness="1" BorderBrush="DarkGray"
+                    Visibility="{Binding IsConversationStarted, Converter={StaticResource booleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.Background>
                         <SolidColorBrush Color="LightGray" Opacity="0.5" />

@@ -20,11 +20,13 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
         {
             Conversation currentConversation = null;
             List<ConversationNode> nodesList = null;
-            
-            currentConversation = new Conversation(manager, 
-                                                   source.ID, 
+
+            currentConversation = new Conversation(manager,
+                                                   source.ID,
                                                    source.DefaultRootNodeID,
-                                                   source.InitConversationScriptId,
+                                                   source.OnStartConversation,
+                                                   source.DidEnterNode,
+                                                   source.DidExitNode,
                                                    source.DefaultOnSelected,
                                                    source.DefaultCanShow);
 
@@ -45,16 +47,20 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
         {
             ConversationNode conversationNode = null;
 
-            conversationNode = new ConversationNode(parent, source.ID, source.CharacterID, source.TextID);
+            conversationNode = new ConversationNode(parent, source.ID, source.CharacterID, source.TextID);            
             return conversationNode;
         }
 
-        internal static ConversationChoice AsConversationChoice(this ConversationChoiceJsonData source)
+        internal static ConversationChoice AsConversationChoice(this ConversationChoiceJsonData source, ConversationNode parent)
         {
             ConversationChoice conversationChoice = null;
 
-            conversationChoice = new ConversationChoice();
-
+            conversationChoice = new ConversationChoice(parent, 
+                                                        source.ID, 
+                                                        source.TextID,
+                                                        source.CanShowID, 
+                                                        source.OnSelectedID, 
+                                                        source.NavigateTo);
             return conversationChoice;
         }
 

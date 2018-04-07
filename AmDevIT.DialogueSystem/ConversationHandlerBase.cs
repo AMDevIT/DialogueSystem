@@ -3,14 +3,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AmDevIT.Games.DialogueSystem
 {
     public abstract class ConversationHandlerBase
     {
         #region Methods
+
+        [DialogDelegate(ID = "onStartConversation", DelegateType = DialogDelegatesTypes.Callback)]
+        public abstract void OnStartConversation(ConversationsManager manager, object state);
+
+        [DialogDelegate(ID = "defaultDidEnterNode", DelegateType = DialogDelegatesTypes.Callback)]
+        public abstract void DefaultDidEnterNode(ConversationsManager manager, object state);
+
+        [DialogDelegate(ID = "defaultDidExitNode", DelegateType = DialogDelegatesTypes.Callback)]
+        public abstract void DefaultDidExitNode(ConversationsManager manager, object state);
+
+        [DialogDelegate(ID = "defaultCanShow", DelegateType = DialogDelegatesTypes.CanExecute)]
+        public abstract bool DefaultCanShow(ConversationsManager manager, object state);
+        
+        [DialogDelegate(ID = "defaultOnChoiceSelected", DelegateType = DialogDelegatesTypes.Callback)]
+        public abstract void DefaultOnChoiceSelected(ConversationsManager manager, object state);
 
         /// <summary>
         /// Retrieve all the DialogDelegate flagged methods using reflection.

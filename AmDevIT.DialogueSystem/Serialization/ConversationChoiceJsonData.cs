@@ -26,6 +26,28 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
             set;
         }
 
+        [DataMember(Name = "canShow", IsRequired = false)]
+        public string CanShowID
+        {
+            get;
+            protected set;
+        }
+
+        [DataMember(Name = "onSelected", IsRequired = false)]
+        public string OnSelectedID
+        {
+            get;
+            protected set;
+        }
+
+        [DataMember(Name = "navigateTo", IsRequired = false)]
+        public string NavigateTo
+        {
+            get;
+            protected set;
+        }
+
+
         #endregion
     }
 }

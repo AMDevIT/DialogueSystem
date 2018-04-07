@@ -1,10 +1,12 @@
 ﻿{
-  "id": "testConversation",
+  "id": "forestConversation",
   "defaultRootNodeId": "startNode",
-  "initConversationScriptId":  "testConversationInitScript",
-  "defaultOnSelected": "testConversationOnSelected",
-  "defaultCanShow": "testConversationCanShow",
-  "comment":  "Demo (and test) conversation",
+  "onStartConversation": "onStartConversation",
+  "defaultDidEnterNode": "defaultDidEnterNode",
+  "defaultDidExitNode": "defaultDidExitNode",
+  "defaultCanShow": "defaultCanShow",
+  "defaultOnSelected": "defaultOnChoiceSelected",
+  "comment": "Demo (and test) conversation.",
   "nodes": [
     {
       "id": "startNode",
@@ -28,7 +30,7 @@
       "id": "node_002",
       "characterId": "companion1",
       "textId": "text_node_002",
-      "comment":  "An empty choices array will be translated to a default ok."
+      "comment": "An empty choices array will be translated to a default ok."
     },
     {
       "id": "node_003",
@@ -48,7 +50,7 @@
       "choices": [
         {
           "id": "cnv_choice_default_ok",
-          "comment": "You can force the default ok behaviour using the reserved key cnv_choice_default_ok"            
+          "comment": "You can force the default ok behaviour using the reserved key cnv_choice_default_ok"
         }
       ]
     },
@@ -58,7 +60,7 @@
       "choices": [
         {
           "id": "sn_node_004_c1",
-          "textId": "text_n002_c1"          
+          "textId": "text_n002_c1"
         }
       ]
     }

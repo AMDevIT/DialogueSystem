@@ -13,6 +13,9 @@ namespace TestApplication.Dialogues
     {
         #region Events
 
+        public event EventHandler StartConversationEnded;
+        public event EventHandler DidEnterNode;
+        public event EventHandler DidExitNode;
         public event EventHandler DialogChoiceSelected;
 
         #endregion
@@ -23,15 +26,21 @@ namespace TestApplication.Dialogues
 
         #region Methods
 
-        [DialogDelegate(ID = "testConversationInitScript")]
-        public void InitConversation(ConversationsManager manager, object state)
+        public override void OnStartConversation(ConversationsManager manager, object state)
         {
             if (manager == null)
                 throw new ArgumentNullException(nameof(manager));            
         }
 
-        [DialogDelegate(ID = "testConversationOnSelected")]
-        public void OnChoiceSelected(ConversationsManager manager, object state)
+        public override void DefaultDidEnterNode(ConversationsManager manager, object state)
+        {            
+        }
+
+        public override void DefaultDidExitNode(ConversationsManager manager, object state)
+        {
+        }
+
+        public override void DefaultOnChoiceSelected(ConversationsManager manager, object state)
         {
             string id = state as String;
 
@@ -42,6 +51,11 @@ namespace TestApplication.Dialogues
                     this.OnChoiceCN1Selected(manager, state);
                     break;
             }
+        }
+        
+        public override bool DefaultCanShow(ConversationsManager manager, object state)
+        {
+            return true;
         }
 
         [DialogDelegate(ID = "testConversationOnSelectedC1")]
@@ -56,21 +70,32 @@ namespace TestApplication.Dialogues
             else
             {
                 // Wrong call. We can fallback on the default handler.
-                this.OnChoiceSelected(manager, state);
+                this.DefaultOnChoiceSelected(manager, state);
             }
         }
 
+        #region Events 
 
-        [DialogDelegate(ID = "testConversationCanShow", DelegateType = DialogDelegatesTypes.CanExecute)]
-        public bool DefaultCanShow(ConversationsManager manager, object state)
+        protected void OnStartConversationEnded()
         {
-            return true;
+            this.StartConversationEnded?.Invoke(this, EventArgs.Empty);
+        }
+        protected void OnDidEnterNode()
+        {
+            this.DidEnterNode?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void OnDidExitNode()
+        {
+            this.DidExitNode?.Invoke(this, EventArgs.Empty);
         }
 
         protected void OnDialogChoceSelected()
         {
             this.DialogChoiceSelected?.Invoke(this, EventArgs.Empty);
-        }        
+        }
+
+        #endregion
 
         #endregion
     }

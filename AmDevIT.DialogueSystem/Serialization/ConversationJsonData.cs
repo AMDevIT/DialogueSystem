@@ -27,28 +27,43 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
             set;
         }
 
-        [DataMember(Name = "initConversationScriptId")]
-        public string InitConversationScriptId
+        [DataMember(Name = "onStartConversation", IsRequired = false)]
+        public string OnStartConversation
         {
             get;
             set;
         }
 
-        [DataMember(Name = "defaultOnSelected")]
+        [DataMember(Name = "didEnterNode", IsRequired = false)]
+        public string DidEnterNode
+        {
+            get;
+            set;
+        }
+
+        [DataMember(Name = "didExitNode", IsRequired = false)]
+        public string DidExitNode
+        {
+            get;
+            set;
+        }
+
+
+        [DataMember(Name = "defaultOnSelected", IsRequired = false)]
         public string DefaultOnSelected
         {
             get;
             set;
         }
 
-        [DataMember(Name = "defaultCanShow")]
+        [DataMember(Name = "defaultCanShow", IsRequired = false)]
         public string DefaultCanShow
         {
             get;
             set;
         }
 
-        [DataMember(Name = "comment")]
+        [DataMember(Name = "comment", IsRequired = false)]
         public string Comment
         {
             get;
