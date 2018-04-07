@@ -1,5 +1,6 @@
 ﻿using AmDevIT.Games.DialogueSystem;
 using AmDevIT.Games.DialogueSystem.Reflection;
+using AmDevIT.Games.DialogueSystem.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,15 +30,19 @@ namespace TestApplication.Dialogues
         public override void OnStartConversation(ConversationsManager manager, object state)
         {
             if (manager == null)
-                throw new ArgumentNullException(nameof(manager));            
+                throw new ArgumentNullException(nameof(manager));
+
+            manager.ExecuteNode(manager.RunningConversation.DefaultRootNodeID);
         }
 
         public override void DefaultDidEnterNode(ConversationsManager manager, object state)
-        {            
+        {
+            this.OnDidEnterNode();
         }
 
         public override void DefaultDidExitNode(ConversationsManager manager, object state)
         {
+            this.OnDidExitNode();
         }
 
         public override void DefaultOnChoiceSelected(ConversationsManager manager, object state)
@@ -49,6 +54,15 @@ namespace TestApplication.Dialogues
                 case "text_sn_c1":
                     // Wrong call.
                     this.OnChoiceCN1Selected(manager, state);
+                    break;
+
+                case "sn_c1":
+                    // Selected sn_c1
+                    break;
+
+                case ReservedIdentifiers.DefaultContinueConversationChoiceID:
+                default:
+                    manager.EndCurrentConversation();
                     break;
             }
         }
@@ -63,9 +77,10 @@ namespace TestApplication.Dialogues
         {
             string id = state as String;
 
-            if (id == "text_sn_c1")
+            if (id == "sn_c1")
             {
-                // Ok
+                // We want to rest so?
+                manager.ExecuteNode("node_002");
             }
             else
             {

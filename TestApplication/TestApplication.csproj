@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -58,6 +59,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\DelegateCommand.cs" />
+    <Compile Include="Dialogues\DialogueChoice.cs" />
     <Compile Include="Dialogues\Localization\ConversationsLocalesImporter.cs" />
     <Compile Include="Dialogues\MainConversationHandler.cs" />
     <Compile Include="Localization\TestConversationLocalizedStrings.Designer.cs">
@@ -68,7 +70,7 @@
     <Compile Include="Models\Character.cs" />
     <Compile Include="Models\Genders.cs" />
     <Compile Include="UI\BooleanToVisibilityConverter.cs" />
-    <Compile Include="ViewModels\ManWindowViewModel.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -108,7 +110,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Assets\testConversation.json" />
+    <Resource Include="Assets\forestConversation.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

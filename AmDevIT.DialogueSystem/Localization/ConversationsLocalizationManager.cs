@@ -143,8 +143,14 @@ namespace AmDevIT.Games.DialogueSystem.Localization
         {
             string result = null;
 
-            if (this.installedLocalesDictionary.ContainsKey(locale) && this.installedLocalesDictionary[locale].ContainsKey(id))
-                result = this.installedLocalesDictionary[locale][id];
+            if (!String.IsNullOrEmpty(id))
+            {
+                if (this.installedLocalesDictionary.ContainsKey(locale) && this.installedLocalesDictionary[locale].ContainsKey(id))
+                    result = this.installedLocalesDictionary[locale][id];
+            }
+
+            if (String.IsNullOrEmpty(result))
+                result = "...";
             return result;
         }
 

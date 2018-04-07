@@ -52,6 +52,7 @@
     <Compile Include="Localization\IConversationsLocalesImporter.cs" />
     <Compile Include="Reflection\DialogDelegateAttribute.cs" />
     <Compile Include="Reflection\DialogDelegatesTypes.cs" />
+    <Compile Include="Resources\ReservedIdentifiers.cs" />
     <Compile Include="Serialization\ConversationChoiceJsonData.cs" />
     <Compile Include="Serialization\ConversationJsonData.cs" />
     <Compile Include="Serialization\ConversationNodeJsonData.cs" />

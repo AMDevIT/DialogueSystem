@@ -36,6 +36,18 @@ namespace AmDevIT.Games.DialogueSystem
             protected set;
         }
 
+        public string DidEnterNodeID
+        {
+            get;
+            protected set;
+        }
+
+        public string DidExitNodeID
+        {
+            get;
+            protected set;
+        }
+
         #endregion
 
         public Conversation ParentConversation
@@ -89,6 +101,40 @@ namespace AmDevIT.Games.DialogueSystem
         public void UpdateText(string text)
         {
             this.Text = text;
+        }
+
+        public void ChoiceSelected(string id)
+        {
+            DialogueSystemCallbackDelegate callbackDelegate = null;
+            ConversationChoice conversationChoice = null;
+
+            if (this.choices.ContainsKey(id))
+            {
+                conversationChoice = this.choices[id];
+
+                if (!String.IsNullOrEmpty(conversationChoice.NavigateTo))
+                {
+                    // All selected is overriden by NavigateTo
+                    this.ParentConversation.ExecuteNode(conversationChoice.NavigateTo);
+                }
+                else
+                {
+                    if (!String.IsNullOrEmpty(conversationChoice.OnSelectedID))
+                        callbackDelegate = this.ParentConversation.ParentConversationManager.GetMethodDelegate(conversationChoice.OnSelectedID) as DialogueSystemCallbackDelegate;
+                    else
+                    {
+                        if (!String.IsNullOrEmpty(this.ParentConversation.DefaultOnSelectedID))
+                            callbackDelegate = this.ParentConversation.ParentConversationManager.GetMethodDelegate(this.ParentConversation.DefaultOnSelectedID) as DialogueSystemCallbackDelegate;
+                    }
+                }
+            }
+
+            callbackDelegate?.Invoke(this.ParentConversation.ParentConversationManager, id);
+        }
+
+        internal void AddChoice(ConversationChoice conversationChoice)
+        {            
+            this.choices.Add(conversationChoice.ID, conversationChoice);
         }
 
         #endregion

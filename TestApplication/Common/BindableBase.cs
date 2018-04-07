@@ -21,7 +21,7 @@ namespace TestApplication.Common
 
         protected virtual bool SetProperty<T> (ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            if (storage.Equals(value))
+            if (storage != null && storage.Equals(value))
                 return false;
 
             storage = value;

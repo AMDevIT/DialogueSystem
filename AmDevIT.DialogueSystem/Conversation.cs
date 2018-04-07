@@ -12,6 +12,7 @@ namespace AmDevIT.Games.DialogueSystem
 
         private readonly Dictionary<string, ConversationNode> conversationNodesDictionary = new Dictionary<string, ConversationNode>();
 
+        private ConversationNode previousNode = null;
         private ConversationNode currentNode = null;
 
         protected string defaultRootNodeID = null;
@@ -56,13 +57,13 @@ namespace AmDevIT.Games.DialogueSystem
             set;
         }
 
-        public string DidEnterNodeID
+        public string DefaultDidEnterNodeID
         {
             get;
             set;
         }
 
-        public string DidExitNodeID
+        public string DefaultDidExitNodeID
         {
             get;
             set;
@@ -94,6 +95,18 @@ namespace AmDevIT.Games.DialogueSystem
             }
         }
 
+        public ConversationNode PreviousNode
+        {
+            get
+            {
+                return this.previousNode;
+            }
+            set
+            {
+                this.previousNode = value;
+            }
+        }
+
         public ConversationNode CurrentNode
         {
             get
@@ -105,7 +118,7 @@ namespace AmDevIT.Games.DialogueSystem
                 this.currentNode = value;
             }
         }
-
+        
         #endregion
 
         #region .ctor
@@ -134,8 +147,8 @@ namespace AmDevIT.Games.DialogueSystem
                               string id, 
                               string defaultRootNodeID,
                               string onStartConversationID,
-                              string didEnterNodeID,
-                              string didExitNodeID,
+                              string defaultDidEnterNodeID,
+                              string defaultDidExitNodeID,
                               string defaultOnSelectedID,
                               string defaultCanShowID, 
                               ConversationNode[] conversationNodes)
@@ -150,8 +163,8 @@ namespace AmDevIT.Games.DialogueSystem
             this.ID = id;
             this.defaultRootNodeID = defaultRootNodeID;
             this.OnStartConversationID = onStartConversationID;
-            this.DidEnterNodeID = didEnterNodeID;
-            this.DidExitNodeID = didExitNodeID;
+            this.DefaultDidEnterNodeID = defaultDidEnterNodeID;
+            this.DefaultDidExitNodeID = defaultDidExitNodeID;
             this.DefaultOnSelectedID = defaultOnSelectedID;
             this.DefaultCanShowID = defaultCanShowID;
 
@@ -161,6 +174,59 @@ namespace AmDevIT.Games.DialogueSystem
         #endregion
 
         #region Methods      
+
+        internal void ExecuteNode(string id)
+        {
+            ConversationNode node = null;
+            bool execute = false;
+
+            if (String.IsNullOrEmpty(id))
+                return;
+
+            if (this.CurrentNode == null)
+                execute = true;
+            else
+            { 
+                if (this.CurrentNode.ID != id)
+                    execute = true;
+            }
+            
+
+            if (execute == true && this.conversationNodesDictionary.ContainsKey(id))
+            {
+                node = this.conversationNodesDictionary[id];
+                if (node != null)
+                    this.ExecuteNode(node);
+            }
+        }
+
+        internal void ExecuteNode(ConversationNode node)
+        {
+            DialogueSystemCallbackDelegate currentDelegate = null;
+
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
+
+            if (this.CurrentNode != null)
+                this.PreviousNode = this.CurrentNode;
+
+            this.CurrentNode = node;
+
+            if (!String.IsNullOrEmpty(this.CurrentNode.DidEnterNodeID))
+            {
+                currentDelegate = this.ParentConversationManager.GetMethodDelegate(this.CurrentNode.DidEnterNodeID) as DialogueSystemCallbackDelegate;                
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(this.DefaultDidEnterNodeID))
+                {
+                    currentDelegate = this.ParentConversationManager.GetMethodDelegate(this.DefaultDidEnterNodeID) as DialogueSystemCallbackDelegate;
+                }
+            }
+
+            if (currentDelegate != null)
+                currentDelegate.Invoke(this.ParentConversationManager, node.ID);
+        }
 
         internal void AddConversationNode(ConversationNode node)
         {

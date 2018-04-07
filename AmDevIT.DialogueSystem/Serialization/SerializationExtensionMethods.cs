@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AmDevIT.Games.DialogueSystem.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,8 +47,35 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
         internal static ConversationNode AsConversationNode(this ConversationNodeJsonData source, Conversation parent)
         {
             ConversationNode conversationNode = null;
+            ConversationChoice defaultOk = null;
+            bool useDefaultOk = true;
 
-            conversationNode = new ConversationNode(parent, source.ID, source.CharacterID, source.TextID);            
+            conversationNode = new ConversationNode(parent, source.ID, source.CharacterID, source.TextID);
+
+            if (source.Choices != null)
+            {
+                if (source.Choices.Length > 0)
+                {
+                    useDefaultOk = false;
+                    foreach (ConversationChoiceJsonData conversationChoiceData in source.Choices)
+                    {
+                        ConversationChoice currentConversationChoice = conversationChoiceData.AsConversationChoice(conversationNode);
+                        conversationNode.AddChoice(currentConversationChoice);
+                    }
+                }
+            }
+
+            if (useDefaultOk)
+            {
+                // Must be optimized. This is really ugly.
+                defaultOk = new ConversationChoice(conversationNode, 
+                                                   ReservedIdentifiers.DefaultContinueConversationChoiceID, 
+                                                   ReservedIdentifiers.DefaultContinueConversationStringID, 
+                                                   null, 
+                                                   null, 
+                                                   null);
+                conversationNode.AddChoice(defaultOk);
+            }
             return conversationNode;
         }
 
@@ -55,12 +83,23 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
         {
             ConversationChoice conversationChoice = null;
 
-            conversationChoice = new ConversationChoice(parent, 
-                                                        source.ID, 
-                                                        source.TextID,
-                                                        source.CanShowID, 
-                                                        source.OnSelectedID, 
-                                                        source.NavigateTo);
+
+            if (source.ID == ReservedIdentifiers.DefaultContinueConversationChoiceID)
+                conversationChoice = new ConversationChoice(parent,
+                                                            source.ID,
+                                                            ReservedIdentifiers.DefaultContinueConversationStringID,
+                                                            null,
+                                                            null,
+                                                            null);
+            else
+            {
+                conversationChoice = new ConversationChoice(parent,
+                                                            source.ID,
+                                                            source.TextID,
+                                                            source.CanShowID,
+                                                            source.OnSelectedID,
+                                                            source.NavigateTo);
+            }
             return conversationChoice;
         }
 

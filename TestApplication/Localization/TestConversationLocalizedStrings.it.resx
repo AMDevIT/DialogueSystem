@@ -120,6 +120,12 @@
   <data name="cnv_txt_hello" xml:space="preserve">
     <value>Ciao</value>
   </data>
+  <data name="text_default_continue_conversation" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="text_node_002" xml:space="preserve">
+    <value>Siamo in una foresta. Dobbiamo essere cauti mentre riposiamo.</value>
+  </data>
   <data name="text_sn_c1" xml:space="preserve">
     <value>Sto cercando un posto dove riposare.</value>
   </data>
@@ -127,6 +133,6 @@
     <value>Sto cercando un mercante di armi.</value>
   </data>
   <data name="text_start_node" xml:space="preserve">
-    <value>Adesso dobbiamo pensare alla prossima mossima.</value>
+    <value>Adesso dobbiamo pensare alla prossima mossa.</value>
   </data>
 </root>

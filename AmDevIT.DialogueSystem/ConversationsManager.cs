@@ -127,11 +127,26 @@ namespace AmDevIT.Games.DialogueSystem
                 callbackDelegate = this.GetMethodDelegate(this.RunningConversation.OnStartConversationID) as DialogueSystemCallbackDelegate;
                 callbackDelegate?.Invoke(this, null);
             }
+            else
+            {
+                if (!String.IsNullOrEmpty(this.RunningConversation.DefaultRootNodeID))
+                    this.ExecuteNode(this.RunningConversation.DefaultRootNodeID);
+            }
         }
 
-        public void FetchNode(string id)
+        public void EndCurrentConversation()
         {
+            if (this.RunningConversation != null)
+            {
+                this.RunningConversation = null;
+                this.OnConversationEnded();
+            }
+        }
 
+        public void ExecuteNode(string id)
+        {
+            if (this.RunningConversation != null)
+                this.RunningConversation.ExecuteNode(id);            
         }
 
         #region Delegates management
@@ -226,7 +241,7 @@ namespace AmDevIT.Games.DialogueSystem
 
         #region Internal methods
 
-        protected Delegate GetMethodDelegate(string id)
+        internal Delegate GetMethodDelegate(string id)
         {
             Delegate method = null;
             if (this.delegatesDictionary.Count > 0 && this.delegatesDictionary.ContainsKey(id))

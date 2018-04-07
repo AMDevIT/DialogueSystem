@@ -70,6 +70,24 @@ namespace TestApplication.Localization {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a ....
+        /// </summary>
+        internal static string text_default_continue_conversation {
+            get {
+                return ResourceManager.GetString("text_default_continue_conversation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a We&apos;re in a forest. We must be caoutions while resting..
+        /// </summary>
+        internal static string text_node_002 {
+            get {
+                return ResourceManager.GetString("text_node_002", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a I&apos;m searching for a place to rest..
         /// </summary>
         internal static string text_sn_c1 {

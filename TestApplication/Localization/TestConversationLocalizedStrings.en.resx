@@ -120,6 +120,12 @@
   <data name="cnv_txt_hello" xml:space="preserve">
     <value>Hello</value>
   </data>
+  <data name="text_default_continue_conversation" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="text_node_002" xml:space="preserve">
+    <value>We're in a forest. We must be caoutions while resting.</value>
+  </data>
   <data name="text_sn_c1" xml:space="preserve">
     <value>I'm searching for a place to rest.</value>
   </data>

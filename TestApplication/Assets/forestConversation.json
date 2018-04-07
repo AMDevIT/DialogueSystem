@@ -49,8 +49,8 @@
       "textId": "text_node_004",
       "choices": [
         {
-          "id": "cnv_choice_default_ok",
-          "comment": "You can force the default ok behaviour using the reserved key cnv_choice_default_ok"
+          "id": "cnv_choice_default_continue_conversation",
+          "comment": "You can force the default ok behaviour using the reserved key cnv_choice_default_continue_conversation"
         }
       ]
     },

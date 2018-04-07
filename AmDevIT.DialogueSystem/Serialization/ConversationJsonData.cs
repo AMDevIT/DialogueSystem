@@ -34,14 +34,14 @@ namespace AmDevIT.Games.DialogueSystem.Serialization
             set;
         }
 
-        [DataMember(Name = "didEnterNode", IsRequired = false)]
+        [DataMember(Name = "defaultDidEnterNode", IsRequired = false)]
         public string DidEnterNode
         {
             get;
             set;
         }
 
-        [DataMember(Name = "didExitNode", IsRequired = false)]
+        [DataMember(Name = "defaultDidExitNode", IsRequired = false)]
         public string DidExitNode
         {
             get;

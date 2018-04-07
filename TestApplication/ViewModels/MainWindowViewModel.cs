@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Resources;
 using TestApplication.Common;
 using TestApplication.Dialogues;
@@ -16,13 +17,13 @@ using TestApplication.Models;
 
 namespace TestApplication.ViewModels
 {
-    public sealed class ManWindowViewModel
+    public sealed class MainWindowViewModel
         : BindableBase
     {
 
         #region Consts
 
-        private const string DefaultTestConversationDataPath = "Assets/testConversation.json";
+        private const string DefaultTestConversationDataPath = "Assets/forestConversation.json";
 
         #endregion
 
@@ -40,6 +41,7 @@ namespace TestApplication.ViewModels
         private string characterName = null;
         private string currentDialogueText = null;
         private ImageSource currentCharacterPortrait = null;
+        private DialogueChoice[] dialogueChoices = null;
 
         #endregion
 
@@ -106,6 +108,18 @@ namespace TestApplication.ViewModels
             }
         }
 
+        public DialogueChoice[] DialogueChoices
+        {
+            get
+            {
+                return this.dialogueChoices;
+            }
+            private set
+            {
+                this.SetProperty(ref this.dialogueChoices, value);
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -114,6 +128,7 @@ namespace TestApplication.ViewModels
         private DelegateCommand testSerializationCommand = null;
         private DelegateCommand startConversationCommand = null;
         private DelegateCommand exitApplicationCommand = null;
+        private DelegateCommand choiceListViewItemSelectedCommand = null;
 
         public DelegateCommand ExitApplicationCommand
         {
@@ -153,6 +168,16 @@ namespace TestApplication.ViewModels
                     this.startConversationCommand = new DelegateCommand(this.StartConversation, this.CanStartTestConversation);
                 return this.startConversationCommand;
             }            
+        }
+
+        public DelegateCommand ChoiceListViewItemSelectedCommand
+        {
+            get
+            {
+                if (this.choiceListViewItemSelectedCommand == null)
+                    this.choiceListViewItemSelectedCommand = new DelegateCommand(this.ChoiceListViewItemSelected);
+                return this.choiceListViewItemSelectedCommand;
+            }
         }
 
         #endregion
@@ -262,9 +287,51 @@ namespace TestApplication.ViewModels
             }
         }
 
+        private void UpdateCharacterPortrait(string characterID)
+        {
+            string uriBase = "pack://application:,,,/";
+            string imageUriString = null;
+            Uri imageUri = null;
+            BitmapImage bitmapImage = null;
+
+            switch (characterID)
+            {
+                case "main_character":
+                    imageUriString = uriBase + "Assets/Images/FlareMaleHero3.png";
+                    break;
+
+                case "companion1":
+                    imageUriString = uriBase + "Assets/Images/FlareFemaleHero1.png";
+                    break;
+
+                case "companion2":
+                    imageUriString = uriBase + "Assets/Images/FlareMaleHero2.png";
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (!String.IsNullOrEmpty(imageUriString))
+            {
+                imageUri = new Uri(imageUriString);
+                bitmapImage = new BitmapImage(imageUri);
+                this.CurrentCharacterPortrait = bitmapImage;
+            }
+        }
+
+        private void ChoiceListViewItemSelected(object parameter)
+        {
+            DialogueChoice dialogueChoice = parameter as DialogueChoice;
+
+            if (parameter != null && this.conversationsManager.RunningConversation != null)
+                this.conversationsManager.RunningConversation.CurrentNode.ChoiceSelected(dialogueChoice.ID);
+        }
+
         #endregion
 
         #region Event Handlers
+
         private void ConversationsManager_ConversationStarted(object sender, EventArgs e)
         {
             this.IsConversationStarted = true;
@@ -282,6 +349,7 @@ namespace TestApplication.ViewModels
 
         private void MainConversationHandler_DidEnterNode(object sender, EventArgs e)
         {
+            List<DialogueChoice> dialogueChoicesList = null;
             Character currentCharacter = null;
             string text = null;
             string characterID = null;
@@ -298,6 +366,21 @@ namespace TestApplication.ViewModels
 
                 this.CharacterName = characterName;
                 this.CurrentDialogueText = text;
+                this.UpdateCharacterPortrait(currentCharacter.ID);
+
+                dialogueChoicesList = new List<DialogueChoice>();
+                
+                foreach(ConversationChoice conversationChoice in this.conversationsManager.RunningConversation.CurrentNode.Choices)
+                {
+                    DialogueChoice currentChoice = new DialogueChoice();
+
+                    currentChoice.ID = conversationChoice.ID;
+                    currentChoice.Text = conversationChoice.Text;
+
+                    dialogueChoicesList.Add(currentChoice);
+                }
+
+                this.DialogueChoices = dialogueChoicesList.ToArray();
             }
         }
 

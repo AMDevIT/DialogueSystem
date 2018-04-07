@@ -23,6 +23,6 @@ namespace TestApplication
         public MainWindow()
         {
             InitializeComponent();
-        }
+        }     
     }
 }
