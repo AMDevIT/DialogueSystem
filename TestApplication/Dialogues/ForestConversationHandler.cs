@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TestApplication.Dialogues
 {
-    public class MainConversationHandler
+    public class ForestConversationHandler
         : ConversationHandlerBase
     {
         #region Events

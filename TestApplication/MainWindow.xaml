@@ -20,7 +20,7 @@
     </Window.DataContext>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding InitializeConversationCommand}"/>
+            <i:InvokeCommandAction Command="{Binding InitializeViewModelCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>

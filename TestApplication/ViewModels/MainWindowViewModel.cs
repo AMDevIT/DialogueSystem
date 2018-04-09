@@ -19,22 +19,10 @@ namespace TestApplication.ViewModels
 {
     public sealed class MainWindowViewModel
         : BindableBase
-    {
-
-        #region Consts
-
-        private const string DefaultTestConversationDataPath = "Assets/forestConversation.json";
-
-        #endregion
-
+    { 
         #region Fields
-
-        private readonly Dictionary<string, Character> charactersDictionary = new Dictionary<string, Character>();
-        private MainConversationHandler mainConversationHandler = null;
-        private ConversationsManager conversationsManager = null;
-        private DialogueSystemJsonConverter dialogueJsonConverter = null;
-        private ConversationsLocalesImporter conversationsLocalesImporter = null;
-        private bool isConversationInitializable = true;
+        
+        private bool isViewModelInitialized = false;
         private bool isConversationStarted = false;
         private bool showDialogueUI = false;
 
@@ -46,6 +34,19 @@ namespace TestApplication.ViewModels
         #endregion
 
         #region Properties
+
+        public bool Initialized
+        {
+            get
+            {
+                return this.isViewModelInitialized;
+            }
+            private set
+            {
+                if (this.SetProperty(ref this.isViewModelInitialized, value))
+                    this.InitializeViewModelCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         public bool IsConversationStarted
         {
@@ -124,7 +125,7 @@ namespace TestApplication.ViewModels
 
         #region Commands
 
-        private DelegateCommand initializeConversationCommand = null;
+        private DelegateCommand initializeViewModelCommand = null;
         private DelegateCommand testSerializationCommand = null;
         private DelegateCommand startConversationCommand = null;
         private DelegateCommand exitApplicationCommand = null;
@@ -140,13 +141,13 @@ namespace TestApplication.ViewModels
             }
         }
 
-        public DelegateCommand InitializeConversationCommand
+        public DelegateCommand InitializeViewModelCommand
         {
             get
             {
-                if (this.initializeConversationCommand == null)
-                    this.initializeConversationCommand = new DelegateCommand(this.InitializeConversation, this.CanInitializeConversation);
-                return this.initializeConversationCommand;
+                if (this.initializeViewModelCommand == null)
+                    this.initializeViewModelCommand = new DelegateCommand(this.InitializeViewModel, this.CanInitializeViewModel);
+                return this.initializeViewModelCommand;
             }
         }
 
@@ -182,6 +183,16 @@ namespace TestApplication.ViewModels
 
         #endregion
 
+        #region .ctor
+
+        public MainWindowViewModel()
+        {
+            GameManager.Current.RefreshUI += Current_RefreshUI;
+
+        }        
+
+        #endregion
+
         #region Methods
 
         private void ExitApplication(object parameter)
@@ -189,77 +200,23 @@ namespace TestApplication.ViewModels
             App.Current.Shutdown(0);
         }
 
-        private bool CanInitializeConversation(object parameter)
+        private bool CanInitializeViewModel(object parameter)
         {
-            return this.isConversationInitializable;
+            return !this.isViewModelInitialized;
         }
 
-        private void InitializeConversation(object parameter)
-        {
-            Character currentCharacter = null;
-            Uri conversationJsonUri = new Uri("pack://application:,,,/" + DefaultTestConversationDataPath);
-            StreamResourceInfo streamResourceInfo = null;
-            StreamReader streamReader = null;
-            KeyValuePair<string, Delegate>[] delegates = null;            
-            string conversationJSon = null;                       
-
-            if (this.isConversationInitializable)
+        private void InitializeViewModel(object parameter)
+        { 
+            if (this.isViewModelInitialized == false)
             {
-                if (this.charactersDictionary.Count > 0)
-                    this.charactersDictionary.Clear();
+                if (GameManager.Current.Initialized == false)
+                    GameManager.Current.Initialize();
 
-                currentCharacter = new Character();
-                currentCharacter.ID = "main_character";
-                currentCharacter.Name = "Marcus";
-                currentCharacter.Surname = "Lionhearth";
-                currentCharacter.Gender = Genders.Male;
-                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
-
-                currentCharacter = new Character();
-                currentCharacter.ID = "companion1";
-                currentCharacter.Name = "Lorraine";
-                currentCharacter.Surname = "Rose";
-                currentCharacter.Gender = Genders.Female;
-                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
-
-                currentCharacter = new Character();
-                currentCharacter.ID = "companion2";
-                currentCharacter.Name = "Slash";
-                currentCharacter.Gender = Genders.Male;
-                this.charactersDictionary.Add(currentCharacter.ID, currentCharacter);
-
-                this.mainConversationHandler = new MainConversationHandler();
-                this.mainConversationHandler.StartConversationEnded += MainConversationHandler_StartConversationEnded;
-                this.mainConversationHandler.DidEnterNode += MainConversationHandler_DidEnterNode;
-                this.mainConversationHandler.DidExitNode += MainConversationHandler_DidExitNode;
-                delegates = this.mainConversationHandler.GetMethodsDelegates();
-
-                this.conversationsLocalesImporter = new ConversationsLocalesImporter();
-                this.conversationsLocalesImporter.RefreshStrings();
-                this.dialogueJsonConverter = new DialogueSystemJsonConverter();
-
-                this.conversationsManager = new ConversationsManager(this.dialogueJsonConverter);
-                this.conversationsManager.ConversationStarted += ConversationsManager_ConversationStarted;
-                this.conversationsManager.ConversationEnded += ConversationsManager_ConversationEnded;
-                this.conversationsManager.LocalizationManager.ImportLocales(this.conversationsLocalesImporter);
-                this.conversationsManager.RegisterDelegates(delegates);
-
-                streamResourceInfo = App.GetResourceStream(conversationJsonUri);
-                if (streamResourceInfo != null)
-                {
-                    using (streamReader = new StreamReader(streamResourceInfo.Stream))
-                    {
-                        conversationJSon = streamReader.ReadToEnd();
-                    }
-                }
-                this.conversationsManager.ParseConversation(conversationJSon);
-                this.isConversationInitializable = false;
-                this.InitializeConversationCommand.RaiseCanExecuteChanged();
-
-                MessageBox.Show("Conversation data initialized. Ready to start.");
+                GameManager.Current.ConversationStarted += GameManager_ConversationStarted;
+                GameManager.Current.ConversationEnded += GameManager_ConversationEnded;
             }
         }
-
+        
         private void TestSerialization(object parameter)
         {
 
@@ -272,19 +229,12 @@ namespace TestApplication.ViewModels
 
         private void StartConversation(object parameter)
         {
-            string conversationName = parameter as string;
+            string conversationID = parameter as string;
 
-            if (String.IsNullOrEmpty(conversationName))
-            {
-                // Show error.
-            }
-
-            if (this.conversationsManager.ContainsConversation(conversationName))
-                this.conversationsManager.StartConversation(conversationName);
-            else
-            {
-                // Show error.
-            }
+            if (String.IsNullOrEmpty(conversationID))
+                throw new ArgumentNullException(nameof(conversationID));
+            
+            GameManager.Current.StartConversation(conversationID);
         }
 
         private void UpdateCharacterPortrait(string characterID)
@@ -324,43 +274,41 @@ namespace TestApplication.ViewModels
         {
             DialogueChoice dialogueChoice = parameter as DialogueChoice;
 
-            if (parameter != null && this.conversationsManager.RunningConversation != null)
-                this.conversationsManager.RunningConversation.CurrentNode.ChoiceSelected(dialogueChoice.ID);
+            if (dialogueChoice != null)
+                GameManager.Current.ChoiceSelected(dialogueChoice);            
         }
 
         #endregion
 
         #region Event Handlers
 
-        private void ConversationsManager_ConversationStarted(object sender, EventArgs e)
+        private void GameManager_ConversationStarted(object sender, EventArgs e)
         {
             this.IsConversationStarted = true;
         }
 
-        private void ConversationsManager_ConversationEnded(object sender, EventArgs e)
+        private void GameManager_ConversationEnded(object sender, EventArgs e)
         {
             this.IsConversationStarted = false;
         }
 
-        private void MainConversationHandler_StartConversationEnded(object sender, EventArgs e)
-        {
-            this.IsConversationStarted = true;
-        }
-
-        private void MainConversationHandler_DidEnterNode(object sender, EventArgs e)
+        private void Current_RefreshUI(object sender, EventArgs e)
         {
             List<DialogueChoice> dialogueChoicesList = null;
+            Conversation runninConversation = GameManager.Current.ConversationsManager.RunningConversation;
+            ConversationNode currentNode = null;
             Character currentCharacter = null;
             string text = null;
             string characterID = null;
             string characterName = null;
 
-            if (this.conversationsManager.RunningConversation.CurrentNode != null)
+            if (runninConversation != null && runninConversation.CurrentNode != null)
             {
-                text = this.conversationsManager.RunningConversation.CurrentNode.Text;
-                characterID = this.conversationsManager.RunningConversation.CurrentNode.CharacterID;
-                if (this.charactersDictionary.ContainsKey(characterID))
-                    currentCharacter = this.charactersDictionary[characterID];
+                currentNode = GameManager.Current.ConversationsManager.RunningConversation.CurrentNode;
+                text = currentNode.Text;
+                characterID = currentNode.CharacterID;
+                if (GameManager.Current.Characters.ContainsKey(characterID))
+                    currentCharacter = GameManager.Current.Characters[characterID];
                 if (currentCharacter != null)
                     characterName = currentCharacter.FullName;
 
@@ -369,8 +317,8 @@ namespace TestApplication.ViewModels
                 this.UpdateCharacterPortrait(currentCharacter.ID);
 
                 dialogueChoicesList = new List<DialogueChoice>();
-                
-                foreach(ConversationChoice conversationChoice in this.conversationsManager.RunningConversation.CurrentNode.Choices)
+
+                foreach (ConversationChoice conversationChoice in currentNode.Choices)
                 {
                     DialogueChoice currentChoice = new DialogueChoice();
 
@@ -382,11 +330,6 @@ namespace TestApplication.ViewModels
 
                 this.DialogueChoices = dialogueChoicesList.ToArray();
             }
-        }
-
-
-        private void MainConversationHandler_DidExitNode(object sender, EventArgs e)
-        {
         }
 
         #endregion

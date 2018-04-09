@@ -61,13 +61,14 @@
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Dialogues\DialogueChoice.cs" />
     <Compile Include="Dialogues\Localization\ConversationsLocalesImporter.cs" />
-    <Compile Include="Dialogues\MainConversationHandler.cs" />
+    <Compile Include="Dialogues\ForestConversationHandler.cs" />
     <Compile Include="Localization\TestConversationLocalizedStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TestConversationLocalizedStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Models\Character.cs" />
+    <Compile Include="Models\GameManager.cs" />
     <Compile Include="Models\Genders.cs" />
     <Compile Include="UI\BooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -110,7 +111,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Assets\forestConversation.json" />
+    <Content Include="Assets\Conversations\forestConversation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

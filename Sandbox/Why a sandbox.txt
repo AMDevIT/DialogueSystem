@@ -1,0 +1,2 @@
+If you need to test your work with the latest version of the library, you can create small project here and referece directly the binary from this folder.
+The directory is places in .gitignore

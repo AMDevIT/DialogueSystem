@@ -295,7 +295,7 @@ namespace AmDevIT.Games.DialogueSystem
         {
             DialogueSystemCallbackDelegate callbackDelegate = null;
             bool handled = false;
-            string choiceID = null;
+            string choiceID = state as String;
 
             if (manager.RunningConversation != null && !String.IsNullOrEmpty(manager.runningConversation.DefaultOnSelectedID))
             {
@@ -309,7 +309,9 @@ namespace AmDevIT.Games.DialogueSystem
 
             if (!handled && manager.RunningConversation != null && manager.RunningConversation.CurrentNode != null)
             {
+
 #warning Add the choice code.
+
             }
         }
 
