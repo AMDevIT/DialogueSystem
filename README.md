@@ -1,6 +1,7 @@
 # JSDialogueSystem
 
 A prototype of a game dialogue system base on JSON conversation trees.
+You can find more using the project [Wiki] (https://github.com/AMDevIT/JSDialogueSystem/wiki)
 
 ## Abstract
 
