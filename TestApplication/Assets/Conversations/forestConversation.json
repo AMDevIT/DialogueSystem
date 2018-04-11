@@ -16,8 +16,8 @@
         {
           "id": "sn_c1",
           "textId": "text_sn_c1",
-          "canShow": "testConversationCanShow",
-          "onSelected": "testConversationOnSelectedC1"
+          "canShow": "sn_c1_CanShow",
+          "onSelected": "sn_c1_OnSelected"
         },
         {
           "id": "sn_c2",

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TestApplication.Dialogues
 {
@@ -72,7 +73,13 @@ namespace TestApplication.Dialogues
             return true;
         }
 
-        [DialogDelegate(ID = "testConversationOnSelectedC1")]
+        [DialogDelegate(ID = "sn_c1_CanShow", DelegateType = DialogDelegatesTypes.CanExecute)]
+        public bool SnC1CanShow(ConversationsManager manager, object state)
+        {
+            return true;
+        }
+
+        [DialogDelegate(ID = "sn_c1_OnSelected")]
         public void OnChoiceCN1Selected(ConversationsManager manager, object state)
         {
             string id = state as String;

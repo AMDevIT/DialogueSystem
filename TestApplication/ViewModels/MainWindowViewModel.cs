@@ -325,7 +325,8 @@ namespace TestApplication.ViewModels
                     currentChoice.ID = conversationChoice.ID;
                     currentChoice.Text = conversationChoice.Text;
 
-                    dialogueChoicesList.Add(currentChoice);
+                    if (conversationChoice.CanShow)
+                        dialogueChoicesList.Add(currentChoice);
                 }
 
                 this.DialogueChoices = dialogueChoicesList.ToArray();

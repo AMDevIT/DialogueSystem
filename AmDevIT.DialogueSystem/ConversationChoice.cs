@@ -50,6 +50,28 @@ namespace AmDevIT.Games.DialogueSystem
 
         #endregion
 
+        public bool CanShow
+        {
+            get
+            {
+                bool result = true;
+
+                DialogueSystemCanExecuteDelegate canShowDelegate = null;
+
+                if (!String.IsNullOrEmpty(this.CanShowID))
+                    canShowDelegate = this.ParentNode.ParentConversation.ParentConversationManager.GetMethodDelegate(this.CanShowID) as DialogueSystemCanExecuteDelegate;
+                else
+                {
+                    if (!String.IsNullOrEmpty(this.ParentNode.ParentConversation.DefaultCanShowID))
+                        canShowDelegate = this.ParentNode.ParentConversation.ParentConversationManager.GetMethodDelegate(this.ParentNode.ParentConversation.DefaultCanShowID) as DialogueSystemCanExecuteDelegate;
+                }
+
+                if (canShowDelegate != null)
+                    result = canShowDelegate.Invoke(this.ParentNode.ParentConversation.ParentConversationManager, this.ID);
+                return result;
+            }
+        }
+
         public string Text
         {
             get;

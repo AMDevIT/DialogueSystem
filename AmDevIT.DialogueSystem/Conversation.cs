@@ -189,8 +189,7 @@ namespace AmDevIT.Games.DialogueSystem
             { 
                 if (this.CurrentNode.ID != id)
                     execute = true;
-            }
-            
+            }            
 
             if (execute == true && this.conversationNodesDictionary.ContainsKey(id))
             {
@@ -208,7 +207,16 @@ namespace AmDevIT.Games.DialogueSystem
                 throw new ArgumentNullException(nameof(node));
 
             if (this.CurrentNode != null)
+            {
+                if (!String.IsNullOrEmpty(this.CurrentNode.DidExitNodeID))
+                {
+                    currentDelegate = this.ParentConversationManager.GetMethodDelegate(this.CurrentNode.DidExitNodeID) as DialogueSystemCallbackDelegate;
+                    currentDelegate?.Invoke(this.ParentConversationManager, this.CurrentNode.ID);
+                    currentDelegate = null;
+                }
+
                 this.PreviousNode = this.CurrentNode;
+            }
 
             this.CurrentNode = node;
 
